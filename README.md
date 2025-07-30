@@ -91,7 +91,7 @@
 </head>
 <body>
 
-  <h1>อัตราส่วนการต้มชา</h1>
+  <h1>อัตราส่วนการต้มชา BaBo Bear Rayong</h1>
 
   <label for="teaType">เลือกประเภทชา:</label>
   <select id="teaType">
