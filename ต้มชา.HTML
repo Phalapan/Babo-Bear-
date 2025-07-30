@@ -1,33 +1,91 @@
-
+<!DOCTYPE html>
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
-  <title>อัตราส่วนการต้มชา</title>
+  <title><อัตราส่วนการต้มชา BaBo Bear Rayong</title>
   <style>
     body {
       font-family: "Kanit", sans-serif;
-      padding: 20px;
-      background-color: #fffbe6;
+      background-color: #fff7e6;
+      margin: 0;
+      padding: 40px;
+      color: #3e2f1c;
     }
+
     h1 {
-      color: #59321c;
+      color: #8b4513;
+      margin-bottom: 20px;
     }
-    select, input, button {
-      font-size: 1em;
-      padding: 10px;
-      margin-top: 10px;
+
+    label {
+      font-weight: bold;
+      margin-top: 15px;
       display: block;
     }
-    .result {
-      margin-top: 20px;
-      background: #fff;
-      border: 1px solid #ccc;
+
+    select, input {
+      font-size: 1.1em;
+      padding: 10px;
+      margin-top: 5px;
       border-radius: 8px;
-      padding: 20px;
-      max-width: 500px;
+      border: 1px solid #ccc;
+      width: 300px;
+      max-width: 100%;
     }
-    ul {
-      padding-left: 20px;
+
+    button {
+      margin-top: 20px;
+      padding: 12px 20px;
+      font-size: 1.1em;
+      background-color: #ffb84d;
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    button:hover {
+      background-color: #e68a00;
+    }
+
+    .result {
+      margin-top: 30px;
+      background: #fffefc;
+      border: 2px solid #f0d9b5;
+      border-radius: 12px;
+      padding: 20px;
+      max-width: 700px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    th, td {
+      border: 1px solid #d9b382;
+      padding: 10px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f5deb3;
+      color: #3e2f1c;
+    }
+
+    td {
+      background-color: #fffaf0;
+    }
+
+    @media (max-width: 600px) {
+      input, select {
+        width: 100%;
+      }
     }
   </style>
 </head>
@@ -39,6 +97,7 @@
   <select id="teaType">
     <option value="clear">ชาใส</option>
     <option value="milk">ชานม</option>
+    <option value="thai">ชาไทย</option>
   </select>
 
   <label for="waterAmount">ปริมาณน้ำ (ลิตร):</label>
@@ -48,7 +107,16 @@
 
   <div class="result" id="resultBox" style="display:none;">
     <h2 id="teaName"></h2>
-    <ul id="ingredientList"></ul>
+    <table>
+      <thead>
+        <tr>
+          <th>วัตถุดิบ</th>
+          <th>ปริมาณที่ใช้</th>
+          <th>หน่วย</th>
+        </tr>
+      </thead>
+      <tbody id="ingredientTable"></tbody>
+    </table>
   </div>
 
   <script>
@@ -76,6 +144,15 @@
           "ครีมเทียมสำเร็จ": { amount: 1000, unit: "กรัม" },
           "บราว์นซูก้า": { amount: 2000, unit: "ML" }
         }
+      },
+      thai: {
+        name: "ชาไทย",
+        baseWater: 1.9,
+        ingredients: {
+          "นมข้นหวาน": { amount: 360, unit: "ML" },
+          "นมจืด": { amount: 360, unit: "ML" },
+          "ครีมเทียม": { amount: 100, unit: "กรัม" }
+        }
       }
     };
 
@@ -97,24 +174,20 @@
 
       const resultBox = document.getElementById("resultBox");
       const teaName = document.getElementById("teaName");
-      const ingredientList = document.getElementById("ingredientList");
+      const ingredientTable = document.getElementById("ingredientTable");
 
-      teaName.textContent = recipe.name + ` (ปริมาณน้ำ: ${inputWater} ลิตร)`;
-      ingredientList.innerHTML = "";
+      teaName.textContent = `${recipe.name} (น้ำ ${inputWater} ลิตร)`;
+      ingredientTable.innerHTML = "";
 
       for (const [ingredient, detail] of Object.entries(recipe.ingredients)) {
-        let scaledAmount;
-
-        if (detail.unit === "ถุง") {
-          // แสดงทศนิยม 2 ตำแหน่งแบบตัดเศษ (เช่น 1.89 → 1.88)
-          scaledAmount = floorToTwoDecimals(detail.amount * scale);
-        } else {
-          scaledAmount = floorToTwoDecimals(detail.amount * scale);
-        }
-
-        const li = document.createElement("li");
-        li.textContent = `${ingredient}: ${scaledAmount.toFixed(2)} ${detail.unit}`;
-        ingredientList.appendChild(li);
+        const scaledAmount = floorToTwoDecimals(detail.amount * scale);
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${ingredient}</td>
+          <td>${scaledAmount.toFixed(2)}</td>
+          <td>${detail.unit}</td>
+        `;
+        ingredientTable.appendChild(row);
       }
 
       resultBox.style.display = "block";
