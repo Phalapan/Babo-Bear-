@@ -1,1 +1,116 @@
 # Babo-Bear-
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <title>อัตราส่วนการต้มชา</title>
+  <style>
+    body {
+      font-family: "Kanit", sans-serif;
+      padding: 20px;
+      background-color: #fffbe6;
+    }
+    h1 {
+      color: #59321c;
+    }
+    select, input, button {
+      font-size: 1em;
+      padding: 10px;
+      margin-top: 10px;
+      display: block;
+    }
+    .result {
+      margin-top: 20px;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 20px;
+      max-width: 500px;
+    }
+    ul {
+      padding-left: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>อัตราส่วนการต้มชา</h1>
+
+  <label for="teaType">เลือกประเภทชา:</label>
+  <select id="teaType">
+    <option value="clear">ชาใส</option>
+    <option value="milk">ชานม</option>
+  </select>
+
+  <label for="waterAmount">ปริมาณน้ำ (ลิตร):</label>
+  <input type="number" id="waterAmount" value="10" min="1" step="1" />
+
+  <button onclick="showRecipe()">แสดงสูตร</button>
+
+  <div class="result" id="resultBox" style="display:none;">
+    <h2 id="teaName"></h2>
+    <ul id="ingredientList"></ul>
+  </div>
+
+  <script>
+    const recipes = {
+      clear: {
+        name: "ชาใส",
+        baseWater: 10,
+        ingredients: {
+          "น้ำ": { amount: 10, unit: "ลิตร" },
+          "น้ำตาล": { amount: 300, unit: "กรัม" },
+          "ใบชา": { amount: 1, unit: "ถุง" }
+        }
+      },
+      milk: {
+        name: "ชานม",
+        baseWater: 10,
+        ingredients: {
+          "น้ำ": { amount: 10, unit: "ลิตร" },
+          "น้ำตาล": { amount: 300, unit: "กรัม" },
+          "ชาแดง": { amount: 150, unit: "กรัม" },
+          "ชา Babo Bear": { amount: 1, unit: "ถุง" },
+          "นมข้นหวาน": { amount: 800, unit: "กรัม" },
+          "นมจืด": { amount: 785, unit: "กรัม" },
+          "ครีมเทียม": { amount: 260, unit: "กรัม" },
+          "ครีมเทียมสำเร็จ": { amount: 1000, unit: "กรัม" },
+          "บราว์นซูก้า": { amount: 2, unit: "ลิตร" }
+        }
+      }
+    };
+
+    function showRecipe() {
+      const teaType = document.getElementById("teaType").value;
+      const inputWater = parseFloat(document.getElementById("waterAmount").value);
+
+      if (isNaN(inputWater) || inputWater <= 0) {
+        alert("กรุณาใส่ปริมาณน้ำให้ถูกต้อง");
+        return;
+      }
+
+      const recipe = recipes[teaType];
+      const scale = inputWater / recipe.baseWater;
+
+      const resultBox = document.getElementById("resultBox");
+      const teaName = document.getElementById("teaName");
+      const ingredientList = document.getElementById("ingredientList");
+
+      teaName.textContent = recipe.name + ` (${inputWater} ลิตร)`;
+      ingredientList.innerHTML = "";
+
+      for (const [ingredient, detail] of Object.entries(recipe.ingredients)) {
+        const scaledAmount = detail.unit === "ถุง"
+          ? (detail.amount * scale).toFixed(1)
+          : Math.round(detail.amount * scale);
+        const li = document.createElement("li");
+        li.textContent = `${ingredient}: ${scaledAmount} ${detail.unit}`;
+        ingredientList.appendChild(li);
+      }
+
+      resultBox.style.display = "block";
+    }
+  </script>
+
+</body>
+</html>
