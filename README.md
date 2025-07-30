@@ -1,5 +1,5 @@
 # Babo-Bear-
-<!DOCTYPE html>
+
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
@@ -70,15 +70,19 @@
           "น้ำ": { amount: 10, unit: "ลิตร" },
           "น้ำตาล": { amount: 300, unit: "กรัม" },
           "ชาแดง": { amount: 150, unit: "กรัม" },
-          "ชา Babo Bear": { amount: 1, unit: "ถุง" },
-          "นมข้นหวาน": { amount: 800, unit: "กรัม" },
-          "นมจืด": { amount: 785, unit: "กรัม" },
+          "ชา Babo Bear": { amount: 260, unit: "กรัม" },
+          "นมข้นหวาน": { amount: 800, unit: "ML" },
+          "นมจืด": { amount: 785, unit: "ML" },
           "ครีมเทียม": { amount: 260, unit: "กรัม" },
           "ครีมเทียมสำเร็จ": { amount: 1000, unit: "กรัม" },
-          "บราว์นซูก้า": { amount: 2, unit: "ลิตร" }
+          "บราว์นซูก้า": { amount: 2000, unit: "ML" }
         }
       }
     };
+
+    function floorToTwoDecimals(num) {
+      return Math.floor(num * 100) / 100;
+    }
 
     function showRecipe() {
       const teaType = document.getElementById("teaType").value;
@@ -96,15 +100,21 @@
       const teaName = document.getElementById("teaName");
       const ingredientList = document.getElementById("ingredientList");
 
-      teaName.textContent = recipe.name + ` (${inputWater} ลิตร)`;
+      teaName.textContent = recipe.name + ` (ปริมาณน้ำ: ${inputWater} ลิตร)`;
       ingredientList.innerHTML = "";
 
       for (const [ingredient, detail] of Object.entries(recipe.ingredients)) {
-        const scaledAmount = detail.unit === "ถุง"
-          ? (detail.amount * scale).toFixed(1)
-          : Math.round(detail.amount * scale);
+        let scaledAmount;
+
+        if (detail.unit === "ถุง") {
+          // แสดงทศนิยม 2 ตำแหน่งแบบตัดเศษ (เช่น 1.89 → 1.88)
+          scaledAmount = floorToTwoDecimals(detail.amount * scale);
+        } else {
+          scaledAmount = floorToTwoDecimals(detail.amount * scale);
+        }
+
         const li = document.createElement("li");
-        li.textContent = `${ingredient}: ${scaledAmount} ${detail.unit}`;
+        li.textContent = `${ingredient}: ${scaledAmount.toFixed(2)} ${detail.unit}`;
         ingredientList.appendChild(li);
       }
 
@@ -114,3 +124,4 @@
 
 </body>
 </html>
+
